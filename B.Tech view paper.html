@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Repository | Searchable Papers</title>
+    <style>
+        :root { --primary: #004a99; --dark: #2c3e50; --light: #f4f4f4; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: var(--light); height: 100vh; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--dark); color: white; padding: 20px; flex-shrink: 0; }
+        .sidebar h2 { font-size: 1.1rem; border-bottom: 1px solid #555; padding-bottom: 10px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { padding: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; margin-bottom: 5px; }
+        .sidebar li:hover, .sidebar li.active { background: var(--primary); }
+
+        /* Main Content */
+        .main { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        
+        /* Search Bar */
+        .search-container { margin-bottom: 25px; }
+        #search-input { width: 100%; padding: 12px 20px; font-size: 1rem; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none; }
+        #search-input:focus { border-color: var(--primary); }
+
+        /* Year Tabs */
+        .tabs { display: flex; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .tab { padding: 10px 25px; background: #e0e0e0; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .tab.active { background: var(--primary); color: white; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        th, td { text-align: left; padding: 15px; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #555; text-transform: uppercase; font-size: 0.85rem; }
+        .sem-badge { background: #e8f0fe; color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .btn { color: var(--primary); text-decoration: none; font-weight: bold; border: 1px solid var(--primary); padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; }
+        .btn:hover { background: var(--primary); color: white; }
+        .empty-msg { padding: 40px; text-align: center; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>B.Tech Branches</h2>
+    <ul id="branch-list">
+        <li class="active" data-value="CSE">Computer Science (CSE)</li>
+        <li data-value="Civil">Civil Engineering</li>
+        <li data-value="Mech">Mechanical Engineering</li>
+        <li data-value="EE">Electrical Engineering</li>
+    </ul>
+</div>
+
+<div class="main">
+    <div class="header">
+        <h1 id="current-title">Computer Science (CSE)</h1>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search by subject name or code (e.g. Data Structures or KCS301)...">
+    </div>
+
+    <!-- Year Selection -->
+    <div class="tabs" id="year-tabs">
+        <div class="tab active" data-year="1">1st Year</div>
+        <div class="tab" data-year="2">2nd Year</div>
+        <div class="tab" data-year="3">3rd Year</div>
+        <div class="tab" data-year="4">4th Year</div>
+    </div>
+
+    <table id="paper-table">
+        <thead>
+            <tr>
+                <th>Sem</th>
+                <th>Code</th>
+                <th>Subject Name</th>
+                <th>Exam Year</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="paper-body">
+            <!-- Dynamic Data -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 1. DATA DATABASE
+    const paperData = [
+        { branch: "CSE", sem: 1, code: "BS101", name: "Engineering Physics", examYear: "2023", link: "#" },
+        { branch: "CSE", sem: 3, code: "KCS301", name: "Data Structures", examYear: "2023", link: "#" },
+        { branch: "CSE", sem: 4, code: "KCS401", name: "Operating Systems", examYear: "2022", link: "#" },
+        { branch: "Civil", sem: 3, code: "CE301", name: "Surveying", examYear: "2023", link: "#" },
+        { branch: "Mech", sem: 5, code: "ME501", name: "Heat Transfer", examYear: "2023", link: "#" },
+        { branch: "CSE", sem: 6, code: "KCS601", name: "Software Engineering", examYear: "2021", link: "#" }
+    ];
+
+    let currentBranch = "CSE";
+    let currentYear = 1;
+
+    function renderPapers() {
+        const tbody = document.getElementById('paper-body');
+        const title = document.getElementById('current-title');
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        
+        title.innerText = document.querySelector('.sidebar li.active').innerText;
+        
+        const filtered = paperData.filter(p => {
+            const paperYear = Math.ceil(p.sem / 2);
+            const matchesBranch = p.branch === currentBranch;
+            const matchesYear = paperYear === parseInt(currentYear);
+            const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.code.toLowerCase().includes(searchTerm);
+
+            // If user is searching, ignore the Year filter to show all matches in that Branch
+            if (searchTerm !== "") {
+                return matchesBranch && matchesSearch;
+            }
+            // Otherwise, show papers matching Branch AND Year
+            return matchesBranch && matchesYear;
+        });
+        
+        // Hide/Show tabs based on whether user is searching
+        document.getElementById('year-tabs').style.display = searchTerm !== "" ? "none" : "flex";
+
+        tbody.innerHTML = "";
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">No results found.</td></tr>`;
+            return;
+        }
+
+        filtered.forEach(paper => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><span class="sem-badge">Sem ${paper.sem}</span></td>
+                    <td>${paper.code}</td>
+                    <td>${paper.name}</td>
+                    <td>${paper.examYear}</td>
+                    <td><a href="${paper.link}" class="btn">View PDF</a></td>
+                </tr>
+            `;
+        });
+    }
+
+    // Sidebar Events
+    document.querySelectorAll('.sidebar li').forEach(li => {
+        li.onclick = () => {
+            document.querySelectorAll('.sidebar li').forEach(b => b.classList.remove('active'));
+            li.classList.add('active');
+            currentBranch = li.getAttribute('data-value');
+            renderPapers();
+        };
+    });
+
+    // Year Tab Events
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentYear = tab.getAttribute('data-year');
+            renderPapers();
+        };
+    });
+
+    // Search Input Event
+    document.getElementById('search-input').oninput = () => {
+        renderPapers();
+    };
+
+    // Initial Load
+    renderPapers();
+</script>
+
+</body>
+</html>
