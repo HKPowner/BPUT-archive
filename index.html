@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Paper Repository</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background: #004a99; color: white; padding: 20px; text-align: center; }
+        .container { width: 80%; margin: auto; overflow: hidden; padding: 20px; }
+        .search-box { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #ccc; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1-fraction)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .card h3 { color: #004a99; }
+        .card a { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #004a99; color: white; text-decoration: none; border-radius: 5px; }
+        .card a:hover { background: #003366; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>University Question Papers</h1>
+    <p>Select your course to download PDF papers</p>
+</header>
+
+<div class="container">
+    <input type="text" class="search-box" placeholder="Search for subjects or codes...">
+    
+    <div class="grid">
+        <div class="card">
+            <h3>B.Tech</h3>
+            <p>Computer Science, Civil, Mechanical, etc.</p>
+            <a href="B.Tech view paper.html">View Papers</a>
+        </div>
+        <div class="card">
+            <h3>MCA</h3>
+            <p>Master of Computer Applications</p>
+            <a href="#">View Papers</a>
+        </div>
+        <div class="card">
+            <h3>MBA</h3>
+            <p>Master of Business Administration</p>
+            <a href="#">View Papers</a>
+        </div>
+        <div class="card">
+            <h3>B.Pharm</h3>
+            <p>Bachelor of Pharmacy</p>
+            <a href="#">View Papers</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
